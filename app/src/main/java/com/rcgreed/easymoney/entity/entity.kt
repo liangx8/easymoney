@@ -19,13 +19,8 @@ const val EXPECT_RATE = "expect_rate"
 const val ACTUAL_MARGIN = "actual_margin"
 const val REMARK = "remark"
 
-abstract class Entity<K> {
-    abstract val contentValues: ContentValues
-    abstract fun contentValuesWithSeq(key:K) :ContentValues
-}
-
 data class Money(
-        val seq: String?,
+        val seq:String,
         val productCode: String,
         val amount: Int,
         val contractDate: Long,
@@ -35,27 +30,11 @@ data class Money(
         var actualMargin: Int?,
         var remark: String?
 )
-fun populateContentValue(src:Any):ContentValues{
-
-    return when (src){
-        is Money -> {
-            val cv=ContentValues()
-            cv.put(SEQ, src.seq)
-            popContentValuesFromMoney(cv,src)
-            cv
-        }
-        else -> throw RuntimeException("unsupported entity class ${src::class}")
-    }
-}
-fun populateContentValuesWithKey(key:String,src:Any):ContentValues{
-    return when (src){
-        is Money ->{
-            val cv=ContentValues()
-            cv.put(SEQ, key)
-            popContentValuesFromMoney(cv,src)
-            cv
-        } else ->throw RuntimeException("unsupported entity class ${src::class}")
-    }
+fun Money.toContentValues():ContentValues{
+    val cv=ContentValues()
+    cv.put(SEQ, this.seq)
+    popContentValuesFromMoney(cv,this)
+    return cv
 }
 private fun popContentValuesFromMoney(cv:ContentValues,src:Money){
     cv.put(PRODUCT_CODE, src.productCode)

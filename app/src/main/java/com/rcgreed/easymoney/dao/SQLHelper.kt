@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.rcgreed.easymoney.entity.SEQ
 
 /**
  * Created by arm on 2017-11-24.
@@ -27,7 +28,10 @@ class SQLHelper(ctx: Context) : SQLiteOpenHelper(ctx, DATABASE_NAME, null, DB_VE
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
     fun insert(table:String,value:ContentValues){
-        writableDatabase.insert(table,null,value);
+        val affect=writableDatabase.insert(table,null,value)
+        if(affect != 1L){
+            throw RuntimeException("insert $table error")
+        }
     }
     fun single(table: String,key:String):Cursor{
         val csr=readableDatabase.query(table,null,"seq = ?", arrayOf(key),null,null,null)
@@ -36,5 +40,15 @@ class SQLHelper(ctx: Context) : SQLiteOpenHelper(ctx, DATABASE_NAME, null, DB_VE
         } else {
             throw SQLException("multiple results")
         }
+    }
+    fun update(table:String,seq:String,cv:ContentValues){
+
+        val affect=writableDatabase.update(table,cv,"seq = ?", arrayOf(seq))
+        when (affect){
+            0 -> throw RuntimeException("Can't find $seq to update")
+            1 -> return
+            else -> throw RuntimeException("Multiple rows affected")
+        }
+
     }
 }
