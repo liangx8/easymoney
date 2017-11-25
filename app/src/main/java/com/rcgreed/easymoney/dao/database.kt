@@ -17,6 +17,7 @@ interface Dao<K, T> {
     fun add(v: T): K
     fun update(v: T)
     fun load(key: K): T
+    fun total():Int
     fun newPaging(selection:String,selectionArgs:Array<String>,orderBy:String,limit:Int):Paging<T>
 }
 

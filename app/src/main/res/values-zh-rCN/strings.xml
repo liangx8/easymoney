@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">流水帐</string>
     <string name="title_activity_main">主界面</string>
+    <string name="setting">设置</string>
 </resources>

@@ -11,6 +11,9 @@ import com.rcgreed.easymoney.entity.toContentValues
  */
 fun newMoneyDao(sqlHelper: SQLHelper): Dao<String, Money> {
     return object : AbstractDao<String, Money>() {
+        override fun total(): Int = sqlHelper.countTable(table = table)
+
+
         override fun newPaging(selection: String, selectionArgs: Array<String>, orderBy: String, limit: Int): Paging<Money> {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
