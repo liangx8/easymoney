@@ -19,6 +19,10 @@ const val EXPECT_RATE = "expect_rate"
 const val ACTUAL_MARGIN = "actual_margin"
 const val REMARK = "remark"
 
+abstract class Entity<K> {
+    abstract val contentValues: ContentValues
+    abstract fun contentValuesWithSeq(key:K) :ContentValues
+}
 
 data class Money(
         val seq: String?,
@@ -31,7 +35,45 @@ data class Money(
         var actualMargin: Int?,
         var remark: String?
 )
+fun populateContentValue(src:Any):ContentValues{
 
+    return when (src){
+        is Money -> {
+            val cv=ContentValues()
+            cv.put(SEQ, src.seq)
+            popContentValuesFromMoney(cv,src)
+            cv
+        }
+        else -> throw RuntimeException("unsupported entity class ${src::class}")
+    }
+}
+fun populateContentValuesWithKey(key:String,src:Any):ContentValues{
+    return when (src){
+        is Money ->{
+            val cv=ContentValues()
+            cv.put(SEQ, key)
+            popContentValuesFromMoney(cv,src)
+            cv
+        } else ->throw RuntimeException("unsupported entity class ${src::class}")
+    }
+}
+private fun popContentValuesFromMoney(cv:ContentValues,src:Money){
+    cv.put(PRODUCT_CODE, src.productCode)
+    cv.put(AMOUNT, src.amount)
+    cv.put(CONTRACT_DATE, src.contractDate)
+    cv.put(ISSUE_DATE, src.issueDate)
+    cv.put(RETURN_DATE, src.returnDate)
+    cv.put(EXPECT_RATE, src.expectRate)
+    cv.put(ACTUAL_MARGIN, src.actualMargin)
+    cv.put(REMARK, src.remark)
+}
+/*
+private fun reflectIt(src:Any){
+    val jclz=src.javaClass
+    val fields=jclz.fields
+
+}
+*/
 fun populateMoney(csr: Cursor): Money =
         Money(
                 csr.getString(csr.getColumnIndex(SEQ)),
@@ -44,16 +86,3 @@ fun populateMoney(csr: Cursor): Money =
                 csr.getInt(csr.getColumnIndex(ACTUAL_MARGIN)),
                 csr.getString(csr.getColumnIndex(REMARK))
         )
-fun populateContentValue(m:Money) :ContentValues{
-        val cv = ContentValues()
-        cv.put(SEQ,m.seq)
-        cv.put(PRODUCT_CODE,m.productCode)
-        cv.put(AMOUNT,m.amount)
-        cv.put(CONTRACT_DATE,m.contractDate)
-        cv.put(ISSUE_DATE,m.issueDate)
-        cv.put(RETURN_DATE,m.returnDate)
-        cv.put(EXPECT_RATE,m.expectRate)
-        cv.put(ACTUAL_MARGIN,m.actualMargin)
-        cv.put(REMARK,m.remark)
-        return cv
-}
