@@ -2,6 +2,11 @@ package com.rcgreed.easymoney.dao
 
 import android.content.ContentValues
 import android.database.Cursor
+import android.util.Base64
+import com.rcgreed.easymoney.entity.Money
+import com.rcgreed.easymoney.entity.populateMoney
+import java.util.*
+
 
 /**
  * Created by arm on 2017-11-24.
@@ -15,6 +20,8 @@ interface Dao<K, T> {
 
 abstract class AbstractDao<K, T>(private val sqlHelper: SQLHelper) : Dao<K, T> {
     protected abstract val table: String
+    protected abstract val populateObject: (Cursor) -> T
+    protected abstract val newKey: () -> K
     override fun save(v: T): K {
         sqlHelper.insert(table, ContentValues())
         return newKey()
@@ -25,11 +32,17 @@ abstract class AbstractDao<K, T>(private val sqlHelper: SQLHelper) : Dao<K, T> {
             sqlHelper.single(table, key)
         else
             sqlHelper.single(table, key.toString())
-        val holder = newHolder()
-        populateFromCursor(csr, holder as Any)
-        return holder
+        return populateObject(csr)
     }
+}
 
-    abstract protected fun newKey(): K
-    abstract protected fun newHolder(): T
+class MoneyDao (sqlHelper: SQLHelper) : AbstractDao<String, Money>(sqlHelper) {
+    override val populateObject: (Cursor) -> Money = ::populateMoney
+    override val newKey: () -> String = ::newStringKey
+    override val table = "t_money"
+}
+
+fun newStringKey(): String {
+    val uuid = UUID.randomUUID()
+    return Base64.encodeToString(null, Base64.DEFAULT).substring(0, 22)
 }

@@ -37,5 +37,4 @@ class SQLHelper(ctx: Context) : SQLiteOpenHelper(ctx, DATABASE_NAME, null, DB_VE
             throw SQLException("multiple results")
         }
     }
-
 }
