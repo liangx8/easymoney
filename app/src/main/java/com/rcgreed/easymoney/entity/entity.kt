@@ -79,6 +79,7 @@ data class Product(
         var averageRate: Int,
         var description: String?
 )
+const val CREATE_TABLE_PRODUCT="CREATE TABLE t_product ($SEQ TEXT,$PRODUCT_CODE TEXT,$PRODUCT_NAME TEXT,$AVERAGE_RATE INT,$DESCRIPTION TEXT)"
 
 fun Product.toContentValues(): ContentValues {
     val cv = ContentValues()

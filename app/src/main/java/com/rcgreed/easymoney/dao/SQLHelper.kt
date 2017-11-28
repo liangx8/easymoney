@@ -7,6 +7,7 @@ import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.rcgreed.easymoney.entity.CREATE_TABLE_MONEY
+import com.rcgreed.easymoney.entity.CREATE_TABLE_PRODUCT
 
 
 /**
@@ -20,8 +21,13 @@ class SQLHelper(ctx: Context) : SQLiteOpenHelper(ctx, DATABASE_NAME, null, DB_VE
     override fun onCreate(db: SQLiteDatabase?)
             = if (db == null) throw RuntimeException("Why gave me a null object")
     else {
-        db.execSQL("DROP TABLE IF EXISTS t_money")
-        db.execSQL(CREATE_TABLE_MONEY)
+
+        db.run {
+            execSQL("DROP TABLE IF EXISTS t_money")
+            execSQL(CREATE_TABLE_MONEY)
+            execSQL("DROP TABLE IF EXISTS t_product")
+            execSQL(CREATE_TABLE_PRODUCT)
+        }
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -34,8 +40,8 @@ class SQLHelper(ctx: Context) : SQLiteOpenHelper(ctx, DATABASE_NAME, null, DB_VE
     }
 
     fun insert(table: String, value: ContentValues) {
-        val affect = writableDatabase.insert(table, null, value)
-        if (affect != 1L) {
+        val rawId = writableDatabase.insertOrThrow(table, null, value)
+        if (rawId == -1L) {
             throw RuntimeException("insert $table error")
         }
     }

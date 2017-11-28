@@ -1,5 +1,7 @@
 package com.rcgreed.easymoney.dao
 
+import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
 import com.rcgreed.easymoney.entity.Money
 import com.rcgreed.easymoney.entity.SEQ
 import com.rcgreed.easymoney.entity.populateMoney
@@ -11,11 +13,16 @@ import com.rcgreed.easymoney.entity.toContentValues
  */
 fun newMoneyDao(sqlHelper: SQLHelper): Dao<String, Money> {
     return object : AbstractDao<String, Money>() {
-        override fun total(): Int = sqlHelper.countTable(table = table)
+        override val total: Int get() = sqlHelper.countTable(table)
 
 
-        override fun newPaging(selection: String, selectionArgs: Array<String>, orderBy: String, limit: Int): Paging<Money> {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        override fun newPaging(selection: String?, selectionArgs: Array<String>?, limit: Int): Paging<Money> = object :AbstractPaging<Money>(){
+            override val table: String ="t_money"
+            override val selection: String? = selection
+            override val limit: Int = limit
+            override val selectionArgs: Array<String>? = selectionArgs
+            override val db: SQLiteDatabase = sqlHelper.readableDatabase
+            override val toObj: (Cursor) -> Money = ::populateMoney
         }
 
         override val table: String = "t_money"

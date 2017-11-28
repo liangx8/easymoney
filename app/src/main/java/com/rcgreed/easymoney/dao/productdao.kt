@@ -1,5 +1,7 @@
 package com.rcgreed.easymoney.dao
 
+import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
 import com.rcgreed.easymoney.entity.Product
 import com.rcgreed.easymoney.entity.SEQ
 import com.rcgreed.easymoney.entity.populateProduct
@@ -24,10 +26,24 @@ fun newProductDao(sqlHelper: SQLHelper):Dao<String,Product>{
 
         override fun load(key: String): Product = populateProduct(sqlHelper.single(table,key))
 
-        override fun total(): Int =sqlHelper.countTable(table)
+        override val total: Int get()=sqlHelper.countTable(table)
 
-        override fun newPaging(selection: String, selectionArgs: Array<String>, orderBy: String, limit: Int): Paging<Product> {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        override fun newPaging(selection: String?, selectionArgs: Array<String>?, limit: Int): Paging<Product> {
+            return object :AbstractPaging<Product>(){
+                override val table: String
+                    get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+                override val selection: String?
+                    get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+                override val limit: Int
+                    get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+                override val selectionArgs: Array<String>?
+                    get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+                override val db: SQLiteDatabase
+                    get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+                override val toObj: (Cursor) -> Product
+                    get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+
+            }
         }
 
         override val table: String = "t_product"
