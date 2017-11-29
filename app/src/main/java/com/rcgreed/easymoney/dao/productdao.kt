@@ -30,19 +30,12 @@ fun newProductDao(sqlHelper: SQLHelper):Dao<String,Product>{
 
         override fun newPaging(selection: String?, selectionArgs: Array<String>?, limit: Int): Paging<Product> {
             return object :AbstractPaging<Product>(){
-                override val table: String
-                    get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-                override val selection: String?
-                    get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-                override val limit: Int
-                    get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-                override val selectionArgs: Array<String>?
-                    get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-                override val db: SQLiteDatabase
-                    get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-                override val toObj: (Cursor) -> Product
-                    get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-
+                override val table = "t_product"
+                override val selection: String? = selection
+                override val limit: Int = limit
+                override val selectionArgs: Array<String>? = selectionArgs
+                override val db: SQLiteDatabase = sqlHelper.readableDatabase
+                override val toObj: (Cursor) -> Product = ::populateProduct
             }
         }
 

@@ -11,7 +11,11 @@ import org.junit.Assert.*
  */
 class ExampleUnitTest {
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun sortTest(){
+        val target = listOf<Int>(2,3,5,9,30)
+        val listInt = listOf<Int>(5,3,2,30,9)
+
+        listInt.sortedBy { it }.forEachIndexed{idx,value -> assertEquals(target[idx],value)}
+
     }
 }

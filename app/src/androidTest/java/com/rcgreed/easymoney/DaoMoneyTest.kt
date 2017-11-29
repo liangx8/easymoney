@@ -31,7 +31,6 @@ class DaoMoneyTest {
         val now = Date().time
         (0 until 10).mapTo(data) { Money(uniqueStringSeq(), "44934", it * 1000000, now, now, null, 500, null, null) }
         data.forEach { dao.add(it) }
-        data.sortBy { it.seq }
     }
 
     @After
@@ -48,7 +47,7 @@ class DaoMoneyTest {
         if (paging.current <= dao.total) {
             paging.more(null)
         }
-        val moneys=dao.newPaging(null,null,10).page(0,"order by seq")
-        data.forEachIndexed { index, money ->  assertEquals(money.seq,moneys[index].seq)}
+        val moneys=dao.newPaging(null,null,10).page(0,"order by amount")
+        data.sortedBy { it.amount }.forEachIndexed { idx, money ->  assertEquals(money.amount,moneys[idx].amount)}
     }
 }

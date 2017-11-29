@@ -18,6 +18,7 @@ const val DATABASE_NAME = "com.rcgreed.easymoney.db20171124"
 const val DB_VERSION = 1
 
 class SQLHelper(ctx: Context) : SQLiteOpenHelper(ctx, DATABASE_NAME, null, DB_VERSION) {
+
     override fun onCreate(db: SQLiteDatabase?)
             = if (db == null) throw RuntimeException("Why gave me a null object")
     else {

@@ -17,7 +17,7 @@ fun newMoneyDao(sqlHelper: SQLHelper): Dao<String, Money> {
 
 
         override fun newPaging(selection: String?, selectionArgs: Array<String>?, limit: Int): Paging<Money> = object :AbstractPaging<Money>(){
-            override val table: String ="t_money"
+            override val table ="t_money"
             override val selection: String? = selection
             override val limit: Int = limit
             override val selectionArgs: Array<String>? = selectionArgs
