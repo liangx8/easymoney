@@ -4,6 +4,8 @@ import org.junit.Test
 
 import org.junit.Assert.*
 
+
+data class SampleInt(val x: String)
 /**
  * Example local unit test, which will execute on the development machine (host).
  *
@@ -12,10 +14,14 @@ import org.junit.Assert.*
 class ExampleUnitTest {
     @Test
     fun sortTest(){
-        val target = listOf<Int>(2,3,5,9,30)
-        val listInt = listOf<Int>(5,3,2,30,9)
 
-        listInt.sortedBy { it }.forEachIndexed{idx,value -> assertEquals(target[idx],value)}
+        val target = mutableListOf<SampleInt>()
+        target.add(SampleInt("ab"))
+        target.add(SampleInt("cd"))
+        target.add(SampleInt("ef"))
+        val listInt = mutableListOf<SampleInt>()
+        target.forEach{listInt.add(it)}
 
+        listInt.sortedBy { it.x }.forEachIndexed{idx,value -> assertEquals(target[idx].x,value.x)}
     }
 }
