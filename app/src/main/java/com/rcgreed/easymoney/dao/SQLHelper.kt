@@ -6,8 +6,10 @@ import android.database.Cursor
 import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Base64
 import com.rcgreed.easymoney.entity.CREATE_TABLE_MONEY
 import com.rcgreed.easymoney.entity.CREATE_TABLE_PRODUCT
+import java.util.*
 
 
 /**
@@ -56,6 +58,21 @@ class SQLHelper(ctx: Context) : SQLiteOpenHelper(ctx, DATABASE_NAME, null, DB_VE
         }
     }
 
+    fun intResult(sql: String,selectArgs: Array<String>):Int {
+        return singleRow(sql,selectArgs).getInt(0)
+    }
+
+    private fun singleRow(sql: String, selectArgs: Array<String>): Cursor {
+        val csr = readableDatabase.rawQuery(sql,selectArgs)
+        if (csr.count == 1){
+            csr.moveToNext()
+            return csr
+        } else {
+            throw SQLException("multiple results")
+        }
+
+    }
+
     fun update(table: String, seq: String, cv: ContentValues) {
 
         val affect = writableDatabase.update(table, cv, "seq = ?", arrayOf(seq))
@@ -64,6 +81,11 @@ class SQLHelper(ctx: Context) : SQLiteOpenHelper(ctx, DATABASE_NAME, null, DB_VE
             1 -> return
             else -> throw RuntimeException("Multiple rows affected")
         }
-
     }
-}
+    val b=ByteArray(10)
+    val r= Random(Date().time)
+    @Synchronized
+    fun uniqueStringSeq():String{
+        r.nextBytes(b)
+        return Base64.encodeToString(b, Base64.NO_CLOSE or Base64.NO_PADDING or Base64.NO_WRAP )
+    }}

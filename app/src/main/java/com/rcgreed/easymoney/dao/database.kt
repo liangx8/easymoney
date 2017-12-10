@@ -20,6 +20,7 @@ interface Dao<K, T> {
     fun newPaging(selection: String?, selectionArgs: Array<String>?, limit: Int): Paging<T>
 }
 
+
 interface Paging<T> {
     fun page(start: Int, orderBy: String?): List<T>
     fun more(orderBy: String?): List<T>
@@ -28,10 +29,11 @@ interface Paging<T> {
 
 abstract class AbstractDao<K, T> : Dao<K, T> {
     protected abstract val table: String
+    protected abstract val newSeq: ()-> K
 }
 
 abstract class AbstractPaging<T> : Paging<T> {
-    abstract protected val table: String
+    abstract protected val tableName: String
     abstract protected val selection: String?
     abstract protected val limit: Int
     abstract protected val selectionArgs: Array<String>?
@@ -43,9 +45,9 @@ abstract class AbstractPaging<T> : Paging<T> {
     override fun page(st: Int, orderBy: String?): List<T> {
         if (limit == 0) throw RuntimeException("zero limit is not allow")
         val sb = if (selection == null)
-            StringBuffer("SELECT * FROM $table")
+            StringBuffer("SELECT * FROM $tableName")
         else
-            StringBuffer("SELECT * FROM $table WHERE $selection")
+            StringBuffer("SELECT * FROM $tableName WHERE $selection")
         if (orderBy != null) {
             sb.append(" ")
             sb.append(orderBy)

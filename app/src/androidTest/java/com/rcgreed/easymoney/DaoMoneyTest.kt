@@ -6,8 +6,7 @@ import com.rcgreed.easymoney.dao.SQLHelper
 import com.rcgreed.easymoney.dao.newMoneyDao
 import com.rcgreed.easymoney.entity.Money
 import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -45,6 +44,16 @@ class DaoMoneyTest {
 
     }
 
+    @Test
+    fun uniqueSeqTest(){
+        val holder= mutableListOf<String>()
+        (0..100).forEach{
+            val seq=sqlHelper.uniqueStringSeq()
+            assertFalse("[$it] $seq",seq in holder)
+            holder.add(seq)
+        }
+
+    }
     @Test
     fun useAppContext() {
 

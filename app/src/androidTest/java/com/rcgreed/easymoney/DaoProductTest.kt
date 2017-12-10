@@ -4,7 +4,6 @@ import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import com.rcgreed.easymoney.dao.SQLHelper
 import com.rcgreed.easymoney.dao.newProductDao
-import com.rcgreed.easymoney.dao.uniqueStringSeq
 import com.rcgreed.easymoney.entity.Product
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -24,7 +23,7 @@ class DaoProductTest {
     private val data = ArrayList<String>()
     @Before
     fun prepare() {
-        (0 until 10).mapTo(data) { dao.add(Product(uniqueStringSeq(), PRODUCTCODE, "理财产品$it", 500, "Production description")) }
+        (0 until 10).mapTo(data) { dao.add(Product("", PRODUCTCODE, "理财产品$it", 500, "Production description")) }
 
     }
 
