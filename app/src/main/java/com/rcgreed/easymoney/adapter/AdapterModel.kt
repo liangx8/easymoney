@@ -8,4 +8,5 @@ interface AdapterModel<G, C> {
     fun getChildCount(groupIdx: Int) :Int
     fun getGroup(idx: Int): G
     fun getChild(groupIdx: Int,childIdx:Int) : C
+    fun notifyChange()
 }

@@ -26,13 +26,22 @@ class MainActivity : AppCompatActivity() {
          */
         TopAdapter(this, object : AdapterModel<Product, Money> {
             override val groupCount: Int = productDao.total
-            override fun getChildCount(groupIdx: Int): Int = sqlHelper.intResult("SELECT COUNT(*) FROM t_money WHERE product = ?", arrayOf(getGroup(groupIdx).productCode))
 
-            override fun getGroup(idx: Int): Product {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+            override fun notifyChange() {
             }
 
+            private var plist : List<Product> = productDao.gu.listFromCursor(sqlHelper.all("t_product"))
+
+
+            override fun getChildCount(groupIdx: Int): Int = sqlHelper.intResult("SELECT COUNT(*) FROM t_money WHERE product_code = ?", arrayOf(plist[groupIdx].productCode))
+
+
+            override fun getGroup(idx: Int): Product = plist[idx]
+
+
             override fun getChild(groupIdx: Int, childIdx: Int): Money {
+
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         })

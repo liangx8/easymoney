@@ -21,23 +21,26 @@ const val DB_VERSION = 1
 
 class SQLHelper(ctx: Context) : SQLiteOpenHelper(ctx, DATABASE_NAME, null, DB_VERSION) {
 
-    override fun onCreate(db: SQLiteDatabase?)
-            = if (db == null) throw RuntimeException("Why gave me a null object")
-    else {
+    override fun onCreate(db: SQLiteDatabase?) {
+        if (db == null) {
+            throw RuntimeException("Why gave me a null object")
+        } else {
 
-        db.run {
-            execSQL("DROP TABLE IF EXISTS t_money")
-            execSQL(CREATE_TABLE_MONEY)
-            execSQL("DROP TABLE IF EXISTS t_product")
-            execSQL(CREATE_TABLE_PRODUCT)
+            db.run {
+                execSQL("DROP TABLE IF EXISTS t_money")
+                execSQL(CREATE_TABLE_MONEY)
+                execSQL("DROP TABLE IF EXISTS t_product")
+                execSQL(CREATE_TABLE_PRODUCT)
+            }
         }
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
-    fun countTable(table:String):Int{
-        val cursor=readableDatabase.query(table, arrayOf("count(*)"),null,null,null,null,null)
+
+    fun countTable(table: String): Int {
+        val cursor = readableDatabase.query(table, arrayOf("count(*)"), null, null, null, null, null)
         cursor.moveToNext()
         return cursor.getInt(0)
     }
@@ -58,13 +61,13 @@ class SQLHelper(ctx: Context) : SQLiteOpenHelper(ctx, DATABASE_NAME, null, DB_VE
         }
     }
 
-    fun intResult(sql: String,selectArgs: Array<String>):Int {
-        return singleRow(sql,selectArgs).getInt(0)
+    fun intResult(sql: String, selectArgs: Array<String>): Int {
+        return singleRow(sql, selectArgs).getInt(0)
     }
 
     private fun singleRow(sql: String, selectArgs: Array<String>): Cursor {
-        val csr = readableDatabase.rawQuery(sql,selectArgs)
-        if (csr.count == 1){
+        val csr = readableDatabase.rawQuery(sql, selectArgs)
+        if (csr.count == 1) {
             csr.moveToNext()
             return csr
         } else {
@@ -82,10 +85,15 @@ class SQLHelper(ctx: Context) : SQLiteOpenHelper(ctx, DATABASE_NAME, null, DB_VE
             else -> throw RuntimeException("Multiple rows affected")
         }
     }
-    val b=ByteArray(10)
-    val r= Random(Date().time)
+
+    private val b = ByteArray(10)
+    private val r = Random(Date().time)
     @Synchronized
-    fun uniqueStringSeq():String{
+    fun uniqueStringSeq(): String {
         r.nextBytes(b)
-        return Base64.encodeToString(b, Base64.NO_CLOSE or Base64.NO_PADDING or Base64.NO_WRAP )
-    }}
+        return Base64.encodeToString(b, Base64.NO_CLOSE or Base64.NO_PADDING or Base64.NO_WRAP)
+    }
+    fun all(table:String) : Cursor{
+        return readableDatabase.query(table,null,null,null,null,null,null)
+    }
+}
