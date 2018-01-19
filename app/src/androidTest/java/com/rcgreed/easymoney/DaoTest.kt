@@ -5,6 +5,7 @@ import android.support.test.runner.AndroidJUnit4
 import com.rcgreed.easymoney.dao.SQLHelper
 import com.rcgreed.easymoney.dao.newProductDao
 import com.rcgreed.easymoney.entity.Product
+import com.rcgreed.easymoney.entity.SEQ
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -23,6 +24,7 @@ class DaoProductTest {
     private val data = ArrayList<String>()
     @Before
     fun prepare() {
+        //sqlHelper.rebuildDatabase(sqlHelper.writableDatabase)
         (0 until 10).mapTo(data) { dao.add(Product("", PRODUCTCODE, "理财产品$it", 500, "Production description")) }
 
     }
@@ -36,7 +38,7 @@ class DaoProductTest {
     fun mainTest() {
 
 
-        val products = dao.newPaging("product_code = ?", arrayOf(PRODUCTCODE), data.size).page(0, "order by seq")
+        val products = dao.query("product_code = ?", arrayOf(PRODUCTCODE),"$SEQ")
         data.sortedBy { it }.forEachIndexed { index, value -> assertEquals("index: ($index)",value, products[index].seq) }
     }
 }

@@ -6,66 +6,60 @@ import com.rcgreed.easymoney.entity.*
 
 /**
  * Created by arm on 2017-12-26.
+ * Product Dao
  */
-fun newProductDao(sqlHelper: SQLHelper): Dao<String, Product> {
-    return object : AbstractDao<String, Product>() {
-        override val gu: GenericUtils<String, Product>
-            get() = object : GenericUtils<String, Product> {
-                override fun listFromCursor(cursor: Cursor): List<Product> {
-                    val itr = object : Iterator<Product>{
-                        override fun hasNext(): Boolean {
-                            return cursor.moveToNext()
-                        }
+fun newProductDao(sqlHelper: SQLHelper): Dao<String, Product> =
+        object : AbstractDao<String, Product>() {
+            override fun cloneWithNewSeq(v: Product, key: String): Product = v.copy(seq = key)
 
-                        override fun next(): Product {
-                            return fromCursor(cursor)
-                        }
+            override fun getSeq(v: Product): String = v.seq
 
-                    }
-                    return Iterable { itr }.toList()
-                }
+            override fun toContentValues(v: Product): ContentValues = v.toContentValues()
 
-                override fun setSeq(v: Product, key: String): Product =
-                        Product(seq = key, productCode = v.productCode, productName = v.productName, averageRate = v.averageRate, description = v.description)
+            override fun fromCursor(cursor: Cursor): Product = populateProduct(cursor)
 
-                override fun getSeq(v: Product): String = v.seq
+            override val sqlHelper = sqlHelper
 
-                override fun toContentValues(v: Product): ContentValues = v.toContentValues()
+            override val newSeq: () -> String = sqlHelper::uniqueStringSeq
 
-                override fun fromCursor(cursor: Cursor): Product = populateProduct(cursor)
-            }
-        override val sqlHelper = sqlHelper
-        override val newSeq: () -> String = sqlHelper::uniqueStringSeq
-        override val total: Int get() = sqlHelper.countTable(table)
+            override val table: String = "t_product"
+
+            override val total = sqlHelper.countTable(table)
+        }
+fun newTranHeadDao(sqlHelper: SQLHelper): Dao<String, TranHead> =
+        object : AbstractDao<String, TranHead>() {
+            override fun cloneWithNewSeq(v: TranHead, key: String): TranHead = v.copy(seq = key)
+
+            override fun getSeq(v: TranHead): String = v.seq
+
+            override fun toContentValues(v: TranHead): ContentValues = v.toContentValues()
+
+            override fun fromCursor(cursor: Cursor): TranHead = tranHeadFromCursor(cursor)
+
+            override val sqlHelper = sqlHelper
+
+            override val newSeq: () -> String = sqlHelper::uniqueStringSeq
+
+            override val table: String = "t_tran_head"
+
+            override val total = sqlHelper.countTable(table)
+        }
+fun newTranBodyDao(sqlHelper: SQLHelper): Dao<String, TranBody> =
+        object : AbstractDao<String, TranBody>() {
+            override fun cloneWithNewSeq(v: TranBody, key: String): TranBody = v.copy(seq = key)
+
+            override fun getSeq(v: TranBody): String = v.seq
+
+            override fun toContentValues(v: TranBody): ContentValues = v.toContentValues()
+
+            override fun fromCursor(cursor: Cursor): TranBody = tranBodyFromCursor(cursor)
 
 
-        override val table: String = "t_product"
+            override val sqlHelper = sqlHelper
 
-    }
-}
+            override val newSeq: () -> String = sqlHelper::uniqueStringSeq
 
-fun newMoneyDao(sqlHelper: SQLHelper): Dao<String, Money> {
-    return object : AbstractDao<String, Money>() {
-        override val gu: GenericUtils<String, Money>
-            get() = object : GenericUtils<String,Money> {
-                override fun listFromCursor(cursor: Cursor): List<Money> {
-                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                }
+            override val table: String = "t_tran_body"
 
-                override fun setSeq(v: Money, key: String): Money =
-                        Money(seq = key,productCode = v.productCode,amount = v.amount,contractDate = v.contractDate,issueDate = v.issueDate,returnDate = v.returnDate,expectRate = v.expectRate,actualMargin = v.actualMargin,remark = v.remark)
-
-                override fun getSeq(v: Money): String = v.seq
-
-                override fun toContentValues(v: Money)= v.toContentValues()
-
-                override fun fromCursor(cursor: Cursor)= populateMoney(cursor)
-
-            }
-        override val sqlHelper = sqlHelper
-        override val newSeq: () -> String = sqlHelper::uniqueStringSeq
-        override val total: Int get() = sqlHelper.countTable(table)
-        override val table: String = "t_money"
-
-    }
-}
+            override val total = sqlHelper.countTable(table)
+        }

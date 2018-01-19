@@ -5,13 +5,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.widget.TextView
-import com.rcgreed.easymoney.entity.Money
 import com.rcgreed.easymoney.entity.Product
+import com.rcgreed.easymoney.entity.TranHeadThumbnail
 
 /**
  * Created by arm on 17-12-8.
  */
-class TopAdapter(private val ctx:Context,private val model: AdapterModel<Product,Money>): BaseExpandableListAdapter() {
+class TopAdapter(private val ctx:Context,private val model: AdapterModel<Product,TranHeadThumbnail>): BaseExpandableListAdapter() {
 
 
     override fun getGroup(p0: Int): Any =Any()
@@ -26,7 +26,7 @@ class TopAdapter(private val ctx:Context,private val model: AdapterModel<Product
         } else {
             TextView(ctx)
         }
-        v.text=model.getGroup(groupPosition).productName
+        v.text=model.getGroup(groupPosition).productCode
         return v
     }
 
@@ -42,7 +42,7 @@ class TopAdapter(private val ctx:Context,private val model: AdapterModel<Product
         } else {
             TextView(ctx)
         }
-        v.text=model.getChild(groupPosition,childPosition).seq
+        v.text=model.getChild(groupPosition,childPosition).head.remark
         return v
     }
 

@@ -7,8 +7,7 @@ import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Base64
-import com.rcgreed.easymoney.entity.CREATE_TABLE_MONEY
-import com.rcgreed.easymoney.entity.CREATE_TABLE_PRODUCT
+import com.rcgreed.easymoney.entity.*
 import java.util.*
 
 
@@ -25,13 +24,18 @@ class SQLHelper(ctx: Context) : SQLiteOpenHelper(ctx, DATABASE_NAME, null, DB_VE
         if (db == null) {
             throw RuntimeException("Why gave me a null object")
         } else {
+            rebuildDatabase(db)
+        }
+    }
+    private fun rebuildDatabase(db : SQLiteDatabase){
+        db.run {
+            execSQL("DROP TABLE IF EXISTS $TABLE_TRAN_HEAD")
+            execSQL(SQL_CREATE_TRAN_HEAD)
+            execSQL("DROP TABLE IF EXISTS $TABLE_TRAN_BODY")
+            execSQL(SQL_CREATE_TRAN_BODY)
+            execSQL("DROP TABLE IF EXISTS $TABLE_PRODUCT")
+            execSQL(SQL_CREATE_PRODUCT)
 
-            db.run {
-                execSQL("DROP TABLE IF EXISTS t_money")
-                execSQL(CREATE_TABLE_MONEY)
-                execSQL("DROP TABLE IF EXISTS t_product")
-                execSQL(CREATE_TABLE_PRODUCT)
-            }
         }
     }
 
@@ -39,11 +43,7 @@ class SQLHelper(ctx: Context) : SQLiteOpenHelper(ctx, DATABASE_NAME, null, DB_VE
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    fun countTable(table: String): Int {
-        val cursor = readableDatabase.query(table, arrayOf("count(*)"), null, null, null, null, null)
-        cursor.moveToNext()
-        return cursor.getInt(0)
-    }
+    fun countTable(table: String): Int = intResult(table, arrayOf("COUNT(*)"),null,null)
 
     fun insert(table: String, value: ContentValues) {
         val rawId = writableDatabase.insertOrThrow(table, null, value)
@@ -52,33 +52,25 @@ class SQLHelper(ctx: Context) : SQLiteOpenHelper(ctx, DATABASE_NAME, null, DB_VE
         }
     }
 
-    fun single(table: String, key: String): Cursor {
-        val csr = readableDatabase.query(table, null, "seq = ?", arrayOf(key), null, null, null)
-        if (csr.count == 1) {
-            return csr
-        } else {
-            throw SQLException("multiple results")
-        }
+    fun single(table: String, key: String): Cursor = singleRow(table,null, "$SEQ = ?", arrayOf(key))
+
+    fun intResult(table: String,columns:Array<String>,selection:String?,selectArgs: Array<String>?): Int {
+        return singleRow(table, columns,selection,selectArgs).getInt(0)
     }
 
-    fun intResult(sql: String, selectArgs: Array<String>): Int {
-        return singleRow(sql, selectArgs).getInt(0)
-    }
-
-    private fun singleRow(sql: String, selectArgs: Array<String>): Cursor {
-        val csr = readableDatabase.rawQuery(sql, selectArgs)
+    private fun singleRow(table:String,columns:Array<String>?,selection:String?,selectArgs:Array<String>?): Cursor{
+        val csr=readableDatabase.query(table,columns,selection,selectArgs,null,null,null,null)
         if (csr.count == 1) {
             csr.moveToNext()
             return csr
         } else {
             throw SQLException("multiple results")
         }
-
     }
 
     fun update(table: String, seq: String, cv: ContentValues) {
 
-        val affect = writableDatabase.update(table, cv, "seq = ?", arrayOf(seq))
+        val affect = writableDatabase.update(table, cv, "$SEQ = ?", arrayOf(seq))
         when (affect) {
             0 -> throw RuntimeException("Can't find $seq to update")
             1 -> return
@@ -93,7 +85,8 @@ class SQLHelper(ctx: Context) : SQLiteOpenHelper(ctx, DATABASE_NAME, null, DB_VE
         r.nextBytes(b)
         return Base64.encodeToString(b, Base64.NO_CLOSE or Base64.NO_PADDING or Base64.NO_WRAP)
     }
-    fun all(table:String) : Cursor{
-        return readableDatabase.query(table,null,null,null,null,null,null)
-    }
+    fun all(table:String,orderBy: String?) : Cursor = query(table,null,null,orderBy)
+
+    fun query(table: String, selection: String?, selectionArgs: Array<String>?, orderBy: String?): Cursor =
+            readableDatabase.query(table,null,selection,selectionArgs,null,null,orderBy)
 }

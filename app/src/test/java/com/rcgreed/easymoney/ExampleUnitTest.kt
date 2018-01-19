@@ -1,5 +1,7 @@
 package com.rcgreed.easymoney
 
+
+import com.rcgreed.easymoney.entity.styleUnderscore
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -23,5 +25,11 @@ class ExampleUnitTest {
         target.forEach{listInt.add(it)}
 
         listInt.sortedBy { it.x }.forEachIndexed{idx,value -> assertEquals(target[idx].x,value.x)}
+    }
+    @Test
+    fun styleCamelTest(){
+        val camel="expectRate"
+        val underscore="expect_rate"
+        assertEquals(underscore, styleUnderscore(camel))
     }
 }
