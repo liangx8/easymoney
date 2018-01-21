@@ -1,11 +1,21 @@
 package com.rcgreed.easymoney
 
 import android.app.Activity
+
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.TabLayout
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentManager
+import android.support.v4.app.FragmentPagerAdapter
+import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.util.SparseArray
+import android.view.LayoutInflater
 import android.view.Menu
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import com.rcgreed.easymoney.adapter.AdapterModel
 import com.rcgreed.easymoney.adapter.TopAdapter
@@ -15,7 +25,6 @@ import com.rcgreed.easymoney.dao.newTranBodyDao
 import com.rcgreed.easymoney.dao.newTranHeadDao
 import com.rcgreed.easymoney.entity.*
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_main.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -93,16 +102,30 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
-        list_top.setAdapter(adapter)
-        adapter.notifyDataSetChanged()
-        fab.setOnClickListener { view ->
-            val ins = Intent(this, TransactionEntry::class.java)
+        tablayout.addTab(tablayout.newTab().setText(R.string.tab1_title))
+        tablayout.addTab(tablayout.newTab().setText(R.string.tab2_title))
+        pager.adapter=PagerAdapter(supportFragmentManager)
+        //pager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tablayout))
+        pager.addOnPageChangeListener(object: ViewPager.SimpleOnPageChangeListener(){
+            override fun onPageSelected(position: Int) {
+                Log.d("page","$position")
+            }
+        })
 
-            startActivityForResult(ins, TRANSACTION_ENTRY_RESULT_CODE)
-            //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-            //        .setAction("Action", null).show()
-        }
+        tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                pager.currentItem=tab?.position ?:0
+            }
+
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -126,3 +149,25 @@ class MainActivity : AppCompatActivity() {
 }
 
 const val TRANSACTION_ENTRY_RESULT_CODE = 1
+
+class PagerAdapter(fm: FragmentManager ) : FragmentPagerAdapter(fm){
+    override fun getItem(position: Int): Fragment {
+        return when (position){
+            0 -> Tab1Fragment()
+            1 -> Tab2Fragment()
+            else -> throw RuntimeException("impossible $position")
+        }
+    }
+    override fun getCount(): Int = 2
+}
+
+class Tab1Fragment : Fragment(){
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater?.inflate(R.layout.tabfragment1,container,false)
+    }
+}
+class Tab2Fragment : Fragment(){
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater?.inflate(R.layout.tabfragment2,container,false)
+    }
+}

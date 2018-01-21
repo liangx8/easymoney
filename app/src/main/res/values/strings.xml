@@ -3,4 +3,6 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="setting">Setting</string>
     <string name="pick_date">Pick date</string>
+    <string name="tab1_title">Margin</string>
+    <string name="tab2_title">Expense</string>
 </resources>
